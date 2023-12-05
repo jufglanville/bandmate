@@ -2,8 +2,12 @@ import Link from "next/link";
 import MaxWidthWrapper from "./MaxWidthWrapper";
 import { buttonVariants } from "./ui/button";
 import { ArrowRight } from "lucide-react";
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/options";
 
-const Navbar = () => {
+const Navbar = async () => {
+  const session = await getServerSession(options);
+
   return (
     <nav className="sticky h-14 inset-x-0 top-0 z-30 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all">
       <MaxWidthWrapper>
@@ -15,34 +19,46 @@ const Navbar = () => {
           {/* TODO : Add Mobile Navbar */}
 
           <div className="hidden items-center space-x-4 sm:flex">
-            <>
+            {!session?.user ? (
+              <>
+                <Link
+                  href="/pricing"
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                  })}
+                >
+                  Pricing
+                </Link>
+                <Link
+                  href="/login"
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                  })}
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/signup"
+                  className={buttonVariants({
+                    size: "sm",
+                  })}
+                >
+                  Get started <ArrowRight className="ml-1.5 h-5 w-5" />
+                </Link>
+              </>
+            ) : (
               <Link
-                href="/pricing"
+                href="/api/auth/signout"
                 className={buttonVariants({
                   variant: "ghost",
                   size: "sm",
                 })}
               >
-                Pricing
+                Sign Out
               </Link>
-              <Link
-                href="/login"
-                className={buttonVariants({
-                  variant: "ghost",
-                  size: "sm",
-                })}
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/signup"
-                className={buttonVariants({
-                  size: "sm",
-                })}
-              >
-                Get started <ArrowRight className="ml-1.5 h-5 w-5" />
-              </Link>
-            </>
+            )}
           </div>
         </div>
       </MaxWidthWrapper>
